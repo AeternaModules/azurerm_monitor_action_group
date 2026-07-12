@@ -1,3 +1,7 @@
+output "monitor_action_groups_id" {
+  description = "Map of id values across all monitor_action_groups, keyed the same as var.monitor_action_groups"
+  value       = { for k, v in azurerm_monitor_action_group.monitor_action_groups : k => v.id }
+}
 output "monitor_action_groups_arm_role_receiver" {
   description = "Map of arm_role_receiver values across all monitor_action_groups, keyed the same as var.monitor_action_groups"
   value       = { for k, v in azurerm_monitor_action_group.monitor_action_groups : k => v.arm_role_receiver }
