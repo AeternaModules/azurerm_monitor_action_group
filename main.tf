@@ -9,7 +9,7 @@ resource "azurerm_monitor_action_group" "monitor_action_groups" {
   tags                = each.value.tags
 
   dynamic "arm_role_receiver" {
-    for_each = each.value.arm_role_receiver != null ? [each.value.arm_role_receiver] : []
+    for_each = each.value.arm_role_receiver != null ? each.value.arm_role_receiver : []
     content {
       name                    = arm_role_receiver.value.name
       role_id                 = arm_role_receiver.value.role_id
@@ -18,7 +18,7 @@ resource "azurerm_monitor_action_group" "monitor_action_groups" {
   }
 
   dynamic "automation_runbook_receiver" {
-    for_each = each.value.automation_runbook_receiver != null ? [each.value.automation_runbook_receiver] : []
+    for_each = each.value.automation_runbook_receiver != null ? each.value.automation_runbook_receiver : []
     content {
       automation_account_id   = automation_runbook_receiver.value.automation_account_id
       is_global_runbook       = automation_runbook_receiver.value.is_global_runbook
@@ -31,7 +31,7 @@ resource "azurerm_monitor_action_group" "monitor_action_groups" {
   }
 
   dynamic "azure_app_push_receiver" {
-    for_each = each.value.azure_app_push_receiver != null ? [each.value.azure_app_push_receiver] : []
+    for_each = each.value.azure_app_push_receiver != null ? each.value.azure_app_push_receiver : []
     content {
       email_address = azure_app_push_receiver.value.email_address
       name          = azure_app_push_receiver.value.name
@@ -39,7 +39,7 @@ resource "azurerm_monitor_action_group" "monitor_action_groups" {
   }
 
   dynamic "azure_function_receiver" {
-    for_each = each.value.azure_function_receiver != null ? [each.value.azure_function_receiver] : []
+    for_each = each.value.azure_function_receiver != null ? each.value.azure_function_receiver : []
     content {
       function_app_resource_id = azure_function_receiver.value.function_app_resource_id
       function_name            = azure_function_receiver.value.function_name
@@ -50,7 +50,7 @@ resource "azurerm_monitor_action_group" "monitor_action_groups" {
   }
 
   dynamic "email_receiver" {
-    for_each = each.value.email_receiver != null ? [each.value.email_receiver] : []
+    for_each = each.value.email_receiver != null ? each.value.email_receiver : []
     content {
       email_address           = email_receiver.value.email_address
       name                    = email_receiver.value.name
@@ -59,7 +59,7 @@ resource "azurerm_monitor_action_group" "monitor_action_groups" {
   }
 
   dynamic "event_hub_receiver" {
-    for_each = each.value.event_hub_receiver != null ? [each.value.event_hub_receiver] : []
+    for_each = each.value.event_hub_receiver != null ? each.value.event_hub_receiver : []
     content {
       event_hub_name          = event_hub_receiver.value.event_hub_name
       event_hub_namespace     = event_hub_receiver.value.event_hub_namespace
@@ -71,7 +71,7 @@ resource "azurerm_monitor_action_group" "monitor_action_groups" {
   }
 
   dynamic "itsm_receiver" {
-    for_each = each.value.itsm_receiver != null ? [each.value.itsm_receiver] : []
+    for_each = each.value.itsm_receiver != null ? each.value.itsm_receiver : []
     content {
       connection_id        = itsm_receiver.value.connection_id
       name                 = itsm_receiver.value.name
@@ -82,7 +82,7 @@ resource "azurerm_monitor_action_group" "monitor_action_groups" {
   }
 
   dynamic "logic_app_receiver" {
-    for_each = each.value.logic_app_receiver != null ? [each.value.logic_app_receiver] : []
+    for_each = each.value.logic_app_receiver != null ? each.value.logic_app_receiver : []
     content {
       callback_url            = logic_app_receiver.value.callback_url
       name                    = logic_app_receiver.value.name
@@ -92,7 +92,7 @@ resource "azurerm_monitor_action_group" "monitor_action_groups" {
   }
 
   dynamic "sms_receiver" {
-    for_each = each.value.sms_receiver != null ? [each.value.sms_receiver] : []
+    for_each = each.value.sms_receiver != null ? each.value.sms_receiver : []
     content {
       country_code = sms_receiver.value.country_code
       name         = sms_receiver.value.name
@@ -101,7 +101,7 @@ resource "azurerm_monitor_action_group" "monitor_action_groups" {
   }
 
   dynamic "voice_receiver" {
-    for_each = each.value.voice_receiver != null ? [each.value.voice_receiver] : []
+    for_each = each.value.voice_receiver != null ? each.value.voice_receiver : []
     content {
       country_code = voice_receiver.value.country_code
       name         = voice_receiver.value.name
@@ -110,7 +110,7 @@ resource "azurerm_monitor_action_group" "monitor_action_groups" {
   }
 
   dynamic "webhook_receiver" {
-    for_each = each.value.webhook_receiver != null ? [each.value.webhook_receiver] : []
+    for_each = each.value.webhook_receiver != null ? each.value.webhook_receiver : []
     content {
       dynamic "aad_auth" {
         for_each = webhook_receiver.value.aad_auth != null ? [webhook_receiver.value.aad_auth] : []

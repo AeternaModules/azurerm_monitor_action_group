@@ -77,12 +77,12 @@ EOT
     enabled             = optional(bool)   # Default: true
     location            = optional(string) # Default: "global"
     tags                = optional(map(string))
-    arm_role_receiver = optional(object({
+    arm_role_receiver = optional(list(object({
       name                    = string
       role_id                 = string
       use_common_alert_schema = optional(bool)
-    }))
-    automation_runbook_receiver = optional(object({
+    })))
+    automation_runbook_receiver = optional(list(object({
       automation_account_id   = string
       is_global_runbook       = bool
       name                    = string
@@ -90,55 +90,55 @@ EOT
       service_uri             = string
       use_common_alert_schema = optional(bool) # Default: false
       webhook_resource_id     = string
-    }))
-    azure_app_push_receiver = optional(object({
+    })))
+    azure_app_push_receiver = optional(list(object({
       email_address = string
       name          = string
-    }))
-    azure_function_receiver = optional(object({
+    })))
+    azure_function_receiver = optional(list(object({
       function_app_resource_id = string
       function_name            = string
       http_trigger_url         = string
       name                     = string
       use_common_alert_schema  = optional(bool)
-    }))
-    email_receiver = optional(object({
+    })))
+    email_receiver = optional(list(object({
       email_address           = string
       name                    = string
       use_common_alert_schema = optional(bool)
-    }))
-    event_hub_receiver = optional(object({
+    })))
+    event_hub_receiver = optional(list(object({
       event_hub_name          = string
       event_hub_namespace     = string
       name                    = string
       subscription_id         = optional(string)
       tenant_id               = optional(string)
       use_common_alert_schema = optional(bool)
-    }))
-    itsm_receiver = optional(object({
+    })))
+    itsm_receiver = optional(list(object({
       connection_id        = string
       name                 = string
       region               = string
       ticket_configuration = string
       workspace_id         = string
-    }))
-    logic_app_receiver = optional(object({
+    })))
+    logic_app_receiver = optional(list(object({
       callback_url            = string
       name                    = string
       resource_id             = string
       use_common_alert_schema = optional(bool)
-    }))
-    sms_receiver = optional(object({
+    })))
+    sms_receiver = optional(list(object({
       country_code = string
       name         = string
       phone_number = string
-    }))
-    voice_receiver = optional(object({
+    })))
+    voice_receiver = optional(list(object({
       country_code = string
       name         = string
       phone_number = string
-    }))
-    webhook_receiver = optional(object({
+    })))
+    webhook_receiver = optional(list(object({
       aad_auth = optional(object({
         identifier_uri = optional(string)
         object_id      = string
@@ -147,268 +147,15 @@ EOT
       name                    = string
       service_uri             = string
       use_common_alert_schema = optional(bool)
-    }))
+    })))
   }))
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        length(v.name) > 0
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        length(v.short_name) >= 1 && length(v.short_name) <= 12
-      )
-    ])
-    error_message = "must be between 1 and 12 characters"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.email_receiver == null || (length(v.email_receiver.name) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.email_receiver == null || (length(v.email_receiver.email_address) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.itsm_receiver == null || (length(v.itsm_receiver.name) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.itsm_receiver == null || (can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", v.itsm_receiver.connection_id)))
-      )
-    ])
-    error_message = "must be a valid UUID"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.itsm_receiver == null || (length(v.itsm_receiver.region) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.azure_app_push_receiver == null || (length(v.azure_app_push_receiver.name) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.azure_app_push_receiver == null || (length(v.azure_app_push_receiver.email_address) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.sms_receiver == null || (length(v.sms_receiver.name) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.sms_receiver == null || (length(v.sms_receiver.country_code) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.sms_receiver == null || (length(v.sms_receiver.phone_number) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.webhook_receiver == null || (length(v.webhook_receiver.name) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.webhook_receiver == null || (v.webhook_receiver.aad_auth == null || (can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", v.webhook_receiver.aad_auth.object_id))))
-      )
-    ])
-    error_message = "must be a valid UUID"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.webhook_receiver == null || (v.webhook_receiver.aad_auth == null || (v.webhook_receiver.aad_auth.tenant_id == null || (can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", v.webhook_receiver.aad_auth.tenant_id)))))
-      )
-    ])
-    error_message = "must be a valid UUID"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.automation_runbook_receiver == null || (length(v.automation_runbook_receiver.name) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.automation_runbook_receiver == null || (length(v.automation_runbook_receiver.runbook_name) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.automation_runbook_receiver == null || (length(v.automation_runbook_receiver.webhook_resource_id) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.voice_receiver == null || (length(v.voice_receiver.name) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.voice_receiver == null || (length(v.voice_receiver.country_code) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.voice_receiver == null || (length(v.voice_receiver.phone_number) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.logic_app_receiver == null || (length(v.logic_app_receiver.name) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.logic_app_receiver == null || (length(v.logic_app_receiver.resource_id) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.azure_function_receiver == null || (length(v.azure_function_receiver.name) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.azure_function_receiver == null || (length(v.azure_function_receiver.function_name) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.arm_role_receiver == null || (length(v.arm_role_receiver.name) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.arm_role_receiver == null || (can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", v.arm_role_receiver.role_id)))
-      )
-    ])
-    error_message = "must be a valid UUID"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.event_hub_receiver == null || (length(v.event_hub_receiver.name) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.event_hub_receiver == null || (length(v.event_hub_receiver.event_hub_name) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.event_hub_receiver == null || (length(v.event_hub_receiver.event_hub_namespace) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.event_hub_receiver == null || (v.event_hub_receiver.tenant_id == null || (can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", v.event_hub_receiver.tenant_id))))
-      )
-    ])
-    error_message = "must be a valid UUID"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_action_groups : (
-        v.event_hub_receiver == null || (v.event_hub_receiver.subscription_id == null || (can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", v.event_hub_receiver.subscription_id))))
-      )
-    ])
-    error_message = "must be a valid UUID"
-  }
   # --- Unconfirmed validation candidates, derived from azurerm_monitor_action_group's provider source ---
   # Not auto-enabled: either a bespoke provider validator we can't safely translate,
   # or a path that crosses a list-typed block (needs its own for_each wrapping).
   # Review, translate into a real validation{} block above, and delete once confirmed.
+  # path: name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: resource_group_name
   #   condition: length(value) <= 90
   #   message:   [from resourcegroups.ValidateName: invalid when len(value) > 90]
@@ -425,6 +172,18 @@ EOT
   #   source:    [from resourcegroups.ValidateName] !matched
   # path: location
   #   source:    validation.Any(...) - no translation rule yet, add one
+  # path: short_name
+  #   condition: length(value) >= 1 && length(value) <= 12
+  #   message:   must be between 1 and 12 characters
+  # path: email_receiver.name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: email_receiver.email_address
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: itsm_receiver.name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: itsm_receiver.workspace_id
   #   source:    [from validate.WorkspaceID] !ok
   # path: itsm_receiver.workspace_id
@@ -435,26 +194,107 @@ EOT
   #   source:    [from validate.WorkspaceID] err != nil
   # path: itsm_receiver.workspace_id
   #   source:    [from validate.WorkspaceID] err != nil
+  # path: itsm_receiver.connection_id
+  #   condition: can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", value))
+  #   message:   must be a valid UUID
   # path: itsm_receiver.ticket_configuration
   #   source:    validation.StringIsJSON(...) - no translation rule yet, add one
+  # path: itsm_receiver.region
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: azure_app_push_receiver.name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: azure_app_push_receiver.email_address
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: sms_receiver.name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: sms_receiver.country_code
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: sms_receiver.phone_number
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: webhook_receiver.name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: webhook_receiver.service_uri
   #   source:    validation.IsURLWithScheme(...) - no translation rule yet, add one
+  # path: webhook_receiver.aad_auth.object_id
+  #   condition: can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", value))
+  #   message:   must be a valid UUID
   # path: webhook_receiver.aad_auth.identifier_uri
   #   source:    validation.IsURLWithScheme(...) - no translation rule yet, add one
+  # path: webhook_receiver.aad_auth.tenant_id
+  #   condition: can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", value))
+  #   message:   must be a valid UUID
+  # path: automation_runbook_receiver.name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: automation_runbook_receiver.automation_account_id
   #   source:    [from automationaccount.ValidateAutomationAccountID] !ok
   # path: automation_runbook_receiver.automation_account_id
   #   source:    [from automationaccount.ValidateAutomationAccountID] err != nil
+  # path: automation_runbook_receiver.runbook_name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: automation_runbook_receiver.webhook_resource_id
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: automation_runbook_receiver.service_uri
   #   source:    validation.IsURLWithScheme(...) - no translation rule yet, add one
+  # path: voice_receiver.name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: voice_receiver.country_code
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: voice_receiver.phone_number
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: logic_app_receiver.name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: logic_app_receiver.resource_id
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: logic_app_receiver.callback_url
   #   source:    validation.IsURLWithScheme(...) - no translation rule yet, add one
+  # path: azure_function_receiver.name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: azure_function_receiver.function_app_resource_id
   #   source:    [from commonids.ValidateFunctionAppID] !ok
   # path: azure_function_receiver.function_app_resource_id
   #   source:    [from commonids.ValidateFunctionAppID] err != nil
+  # path: azure_function_receiver.function_name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: azure_function_receiver.http_trigger_url
   #   source:    validation.IsURLWithScheme(...) - no translation rule yet, add one
+  # path: arm_role_receiver.name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: arm_role_receiver.role_id
+  #   condition: can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", value))
+  #   message:   must be a valid UUID
+  # path: event_hub_receiver.name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: event_hub_receiver.event_hub_name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: event_hub_receiver.event_hub_namespace
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: event_hub_receiver.tenant_id
+  #   condition: can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", value))
+  #   message:   must be a valid UUID
+  # path: event_hub_receiver.subscription_id
+  #   condition: can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", value))
+  #   message:   must be a valid UUID
   # path: tags
   #   condition: length(value) <= 50
   #   message:   [from tags.Validate: invalid when len(value) > 50]
