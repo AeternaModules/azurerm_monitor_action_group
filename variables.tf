@@ -74,8 +74,8 @@ EOT
     name                = string
     resource_group_name = string
     short_name          = string
-    enabled             = optional(bool)   # Default: true
-    location            = optional(string) # Default: "global"
+    enabled             = optional(bool)
+    location            = optional(string)
     tags                = optional(map(string))
     arm_role_receiver = optional(list(object({
       name                    = string
@@ -88,7 +88,7 @@ EOT
       name                    = string
       runbook_name            = string
       service_uri             = string
-      use_common_alert_schema = optional(bool) # Default: false
+      use_common_alert_schema = optional(bool)
       webhook_resource_id     = string
     })))
     azure_app_push_receiver = optional(list(object({
